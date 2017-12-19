@@ -19,6 +19,8 @@
 
 - name: install gdebi
   apt: name=gdebi
+  register: result_gdebi
+  until: result_gdebi|success
   sudo: yes
 
 - name: Check if vagrant is installed
@@ -31,9 +33,13 @@
   command: wget -O /tmp/vagrant.deb {{vagrant_url}}
   args:
     creates: "/tmp/vagrant.deb"
+  register: result_download_vagrant
+  until: result_download_vagrant|success
   when: check_vagrant.rc == 1
 
 - name: Install vagrant package
   sudo: true
   command: gdebi --non-interactive /tmp/vagrant.deb
+  register: result_install_vagrant
+  until: result_install_vagrant|success
   when: check_vagrant.rc == 1
